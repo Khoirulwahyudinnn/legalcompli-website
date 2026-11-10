@@ -20,27 +20,19 @@
   --hairline: rgba(0, 0, 0, 0.08);
 
   /* Typography system: Geist Serif for headings, Inter for body and UI */
-  --font-heading: "Geist Serif", "Times New Roman", Times, serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-geist-serif), "Geist Serif", "Times New Roman", Times, serif;
+  --font-body: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --heading-weight: 400;
   --body-weight: 400;
   --ui-weight: 500;      /* subheadings, buttons, navigation */
 
-  --gutter: 32px;
-  --max: 1440px;
+  --gutter: 120px;         /* page side padding (desktop); 32px ≤1240, 16px ≤760 */
+  --max: none;            /* full width: content keeps a 32px gutter (Figma) at every screen size */
   --radius: 10px;
 
   --btn-shadow: 0 83px 23px 0 rgba(0, 0, 0, 0), 0 53px 21px 0 rgba(0, 0, 0, 0.02),
     0 30px 18px 0 rgba(0, 0, 0, 0.06), 0 13px 13px 0 rgba(0, 0, 0, 0.1),
     0 3px 7px 0 rgba(0, 0, 0, 0.12);
-}
-
-@font-face {
-  font-family: "Geist Serif";
-  src: url("assets/fonts/GeistSerif-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
 }
 
 *,
@@ -291,7 +283,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
    HERO
    ========================================================================== */
 .hero {
-  --hero-pad-x: 32px;       /* text column: exactly 32px left/right at every size */
+  --hero-pad-x: var(--gutter);   /* text column follows the page gutter */
   position: relative;
   max-width: var(--max);    /* site container */
   margin: 0 auto;
@@ -321,7 +313,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
 
 /* ---- hero layout (as specified) ---- */
 .hero-content {
-  padding-inline: 32px;
+  padding-inline: var(--gutter);
 }
 
 .hero-image-wrapper {
@@ -416,7 +408,9 @@ button, input, select, textarea, table { font-family: var(--font-body); }
   gap: 60px;
 }
 .section-head--center { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
-.services__title { width: min(506px, 100%); }
+.services__title { width: auto; max-width: 100%; }
+.services__line { display: block; } /* one sentence per line: exactly 2 lines */
+@media (max-width: 760px) { .services__line { display: inline; } } /* small screens: wrap naturally */
 .services__sub { width: min(310px, 100%); color: rgba(0, 0, 0, 0.8); margin-top: 4px; }
 
 /* ---------- stacked cards ----------
@@ -515,7 +509,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
 .how__band {
   position: absolute;
   left: 50%;
-  width: 1440px;
+  width: max(1440px, 100%);   /* full width on wide screens */
   height: 60px;
   transform: translateX(-50%);
   pointer-events: none;
@@ -573,7 +567,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
   place-items: center;
 }
 .fx--art { left: calc(50% - 236px); top: 50%; width: 996px; height: 664px; transform: translate(-50%, -50%); }
-.step__art .fx--art { left: calc(224px - 236px); } /* art frame is 448px wide in the design */
+.step__art .fx--art { left: 50%; } /* centred so the 996px art covers the card at any width */
 
 .chips {
   position: relative;
@@ -615,22 +609,22 @@ button, input, select, textarea, table { font-family: var(--font-body); }
 .t-grid {
   margin-top: 104px;
   display: grid;
-  grid-template-columns: repeat(4, 332px);
-  justify-content: space-between;
+  /* 4 equal columns filling the content width between the page gutters, 16px gaps (Figma) */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   row-gap: 16px;
   column-gap: 16px;
 }
 .t-card {
   grid-column: var(--col);
   grid-row: var(--row);
-  width: 332px;
+  width: auto;
   border-radius: var(--radius);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease;
+  transition: box-shadow 0.3s ease;
 }
-.t-card:hover { transform: translateY(-4px); box-shadow: 0 1px 2px rgba(40, 40, 40, 0.06); } /* hairline shadow only */
+.t-card:hover { box-shadow: 0 2px 8px rgba(40, 40, 40, 0.08); } /* thin shadow only, no lift */
 
 .t-card__bar,
 .about-card__bar {
@@ -642,7 +636,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
   border-radius: 8px 8px 0 0;
   overflow: hidden;
 }
-.t-card__bar .fx--art { top: calc(50% - 0.25px); }
+.t-card__bar .fx--art { top: calc(50% - 0.25px); width: max(996px, calc(100% + 472px)); } /* still covers wider cards */
 .t-card__dots,
 .about-card__dots { position: absolute; left: 9.5px; top: calc(50% - 0.25px); transform: translateY(-50%); }
 
@@ -735,7 +729,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
   width: 100%;
   max-width: var(--max);
   margin: 0 auto;
-  padding: 100px 199px 100px 33px;
+  padding: 100px var(--gutter);
   display: grid;
   grid-template-columns: 291px 1fr;
   align-items: center;
@@ -865,7 +859,7 @@ button, input, select, textarea, table { font-family: var(--font-body); }
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 1446px;
+  width: max(1446px, calc(100% + 6px));   /* full width on wide screens */
   height: 810px;
   transform: translateX(-50%);
   object-fit: cover;
@@ -921,7 +915,13 @@ button, input, select, textarea, table { font-family: var(--font-body); }
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
+/* 120px gutters leave too little room for 4 testimonial cards (portrait is 277px): 3 columns */
+@media (max-width: 1400px) {
+  .t-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .t-card { grid-column: auto; grid-row: auto; }
+}
 @media (max-width: 1240px) {
+  :root { --gutter: 32px; }
   .site-nav { gap: 16px; }
   .t-grid { grid-template-columns: repeat(3, 332px); justify-content: center; }
   .t-card { grid-column: auto; grid-row: auto; }
